@@ -1,5 +1,6 @@
 <?php
 error_reporting(E_ALL);
+date_default_timezone_set('Europe/Samara');
 
 function a_log($a_str, &$_currObj){
     var_dump($_currObj->ui->tableWidget);

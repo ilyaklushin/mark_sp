@@ -10,7 +10,7 @@ class MainWindow extends QMainWindow
 
     public function edit1(){
         var_dump($this->ui->label->text);
-        $this->ui->label->text="PHP ver:".PHP_VERSION_ID;
+        $this->ui->label->text="Build:v0.2  PHP ver:".PHP_VERSION_ID;
         //phpinfo();
     }
 
@@ -42,7 +42,7 @@ class MainWindow extends QMainWindow
      */
     public function onPushButton_3Clicked($sender)
     {
-        mark_btn_run($this->ui->progressBar, $this->ui->lineEdit->text, $this->ui->lineEdit_2->text, false);
+        mark_btn_run($this->ui->progressBar, $this->ui->checkBox, $this->ui->lineEdit->text, $this->ui->lineEdit_2->text, false);
     }
 
     /**
@@ -51,7 +51,7 @@ class MainWindow extends QMainWindow
      */
     public function onPushButton_6Clicked($sender)
     {
-        mark_btn_run($this->ui->progressBar, $this->ui->lineEdit->text, $this->ui->lineEdit_2->text, false, true);
+        mark_btn_run($this->ui->progressBar, $this->ui->checkBox, $this->ui->lineEdit->text, $this->ui->lineEdit_2->text, false, true);
     }
 
     /**
@@ -60,7 +60,7 @@ class MainWindow extends QMainWindow
      */
     public function onPushButton_4Clicked($sender)
     {
-        mark_btn_run($this->ui->progressBar, $this->ui->lineEdit->text, $this->ui->lineEdit_2->text);
+        mark_btn_run($this->ui->progressBar, $this->ui->checkBox, $this->ui->lineEdit->text, $this->ui->lineEdit_2->text);
     }
 
     /**
@@ -69,6 +69,6 @@ class MainWindow extends QMainWindow
      */
     public function onPushButton_5Clicked($sender)
     {
-        mark_btn_run($this->ui->progressBar, $this->ui->lineEdit->text, $this->ui->lineEdit_2->text, true, true);
+        mark_btn_run($this->ui->progressBar, $this->ui->checkBox, $this->ui->lineEdit->text, $this->ui->lineEdit_2->text, true, true, true);
     }
 }

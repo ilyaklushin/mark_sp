@@ -18,13 +18,13 @@ function mark_read_dir($dirname) {
     return $rtrn;
 }
 
-function mark_decode_to_arr($src_arr, $progress){
+function mark_decode_to_arr($src_arr, $progress, $no_name=false){
     $rtrn=array();
     $pval=0;
     foreach ($src_arr as $row){
         $d_row=base64_decode($row);
         $gtin=substr($d_row, 0, 14);
-        if (strlen($rtrn[$gtin]["name"])<3){
+        if (strlen($rtrn[$gtin]["name"])<3 && $no_name==false){
             $gtin_name=mark_sGET("http://srs.gs1ru.org/id/gtin/".substr($d_row, 1, 13));
             $gtin_name=substr($gtin_name, strpos($gtin_name,'product-card__header-product-name')+35);
             $gtin_name=trim(substr($gtin_name, 0, stripos($gtin_name, '</p>')));
@@ -54,30 +54,44 @@ function mark_save_to_file_clean($dst, $file_arr){
     fclose($fp);
 }
 
-function mark_btn_run($progress, $srcdir, $dstdir, $by_gtin=true, $clean_out=false) {
+function mark_btn_run($progress, $toOneFile, $srcdir, $dstdir, $by_gtin=true, $clean_out=false, $no_name=false) {
     $a_src=mark_read_dir($srcdir);
     $progress->setRange(0, count($a_src));
-    $d_arr=mark_decode_to_arr($a_src, $progress);
+    $d_arr=mark_decode_to_arr($a_src, $progress, ($no_name||($toOneFile->isChecked()&&$clean_out)) );
     if (!file_exists($dstdir)) {
         mkdir($dstdir, 0777, true);
     }
 
-    if ($by_gtin && $clean_out){
-        foreach ($d_arr as $gtin => $data){
-            mark_save_to_file_clean($dstdir."/".$gtin.".txt", $data["code"]);
+    if(!$toOneFile->isChecked()){
+        if ($by_gtin && $clean_out){
+            foreach ($d_arr as $gtin => $data){
+                mark_save_to_file_clean($dstdir."/".$gtin.".txt", $data["code"]);
+            }
+        } elseif($by_gtin && !$clean_out){
+            foreach ($d_arr as $gtin => $data){
+                mark_save_to_file($dstdir."/".$gtin.".txt", $gtin, $data["rawname"], $data["code"]);
+            }
+        } elseif(!$by_gtin && $clean_out){
+            foreach ($d_arr as $gtin => $data){
+                if (strlen($data["name"])<3){ $data["name"]="notFound_".$gtin; }
+                mark_save_to_file_clean($dstdir."/".preg_replace('/[^A-Za-z0-9 ]/','',$data["name"]).".txt", $data["code"]);
+            }
+        } else{
+            foreach ($d_arr as $gtin => $data){
+                if (strlen($data["name"])<3){ $data["name"]="notFound_".$gtin; }
+                mark_save_to_file($dstdir."/".preg_replace('/[^A-Za-z0-9 ]/','',$data["name"]).".txt", $gtin, $data["rawname"], $data["code"]);
+            }
         }
-    } elseif($by_gtin && !$clean_out){
+    } else {
+        $fp=fopen($dstdir."/result_".date("Ymd_His").".txt", 'w');
         foreach ($d_arr as $gtin => $data){
-            mark_save_to_file($dstdir."/".$gtin.".txt", $gtin, $data["rawname"], $data["code"]);
+            if (!$clean_out){
+                fwrite($fp, $gtin."\n".$data["rawname"]."\n");
+            }
+            fwrite($fp, implode("\n", $data["code"]));
         }
-    } elseif(!$by_gtin && $clean_out){
-        foreach ($d_arr as $gtin => $data){
-            mark_save_to_file_clean($dstdir."/".preg_replace('/[^A-Za-z0-9 ]/','',$data["name"]).".txt", $data["code"]);
-        }
-    } else{
-        foreach ($d_arr as $gtin => $data){
-            mark_save_to_file($dstdir."/".preg_replace('/[^A-Za-z0-9 ]/','',$data["name"]).".txt", $gtin, $data["rawname"], $data["code"]);
-        }
+        fclose($fp);
     }
+
 
 }
