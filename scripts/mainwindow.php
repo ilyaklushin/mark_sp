@@ -10,7 +10,7 @@ class MainWindow extends QMainWindow
 
     public function edit1(){
         var_dump($this->ui->label->text);
-        $this->ui->label->text="Build:v0.2  PHP ver:".PHP_VERSION_ID;
+        $this->ui->label->text="Build:v0.2a  PHP ver:".PHP_VERSION_ID;
         //phpinfo();
     }
 

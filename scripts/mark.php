@@ -88,7 +88,7 @@ function mark_btn_run($progress, $toOneFile, $srcdir, $dstdir, $by_gtin=true, $c
             if (!$clean_out){
                 fwrite($fp, $gtin."\n".$data["rawname"]."\n");
             }
-            fwrite($fp, implode("\n", $data["code"]));
+            fwrite($fp, implode("\n", $data["code"])."\n");
         }
         fclose($fp);
     }
